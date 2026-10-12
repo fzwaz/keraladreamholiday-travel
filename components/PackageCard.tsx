@@ -22,7 +22,7 @@ export function PackageThumb({ pkg, className = "" }: { pkg: TourPackage; classN
   );
 }
 
-export default function PackageCard({ pkg }: { pkg: TourPackage }) {
+export default function PackageCard({ pkg, onEnquire }: { pkg: TourPackage; onEnquire?: (pkg: TourPackage) => void }) {
   return (
     <article className="flex flex-col border border-line bg-paper transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_34px_rgba(31,51,36,0.1)]">
       <div className="relative aspect-[16/10.5] overflow-hidden">
@@ -64,9 +64,14 @@ export default function PackageCard({ pkg }: { pkg: TourPackage }) {
           ))}
         </div>
         <div className="mt-auto flex flex-col gap-2 pt-1.5">
-          <Link href="/#get-quote" className="rounded-sm bg-forest p-[11px] text-center font-mono text-[13px] tracking-wide text-paper transition-colors hover:bg-tea">
+          <button
+            type="button"
+            onClick={() => onEnquire?.(pkg)}
+            aria-haspopup="dialog"
+            className="rounded-sm bg-forest p-[11px] text-center font-mono text-[13px] tracking-wide text-paper transition-colors hover:bg-tea"
+          >
             Get Free Quotes
-          </Link>
+          </button>
           <Link href="/#get-quote" className="rounded-sm border border-line p-2.5 text-center text-[13px] text-inksoft transition-colors hover:border-forest hover:text-forest">
             View Details
           </Link>

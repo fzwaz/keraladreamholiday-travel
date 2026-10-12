@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import PackageCard from "@/components/PackageCard";
+import PackageEnquiryModal from "@/components/PackageEnquiryModal";
 import { PromoForm } from "@/components/packages-ui";
 import type { TourPackage } from "@/lib/site";
 
@@ -76,6 +77,7 @@ export default function PackagesExplorer({
   const [themes, setThemes] = useState<string[]>([]);
   const [budget, setBudget] = useState(MAX_BUDGET);
   const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState<TourPackage | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(
@@ -217,7 +219,7 @@ export default function PackagesExplorer({
         ) : (
           <div className="grid grid-cols-3 gap-[22px] max-lg:grid-cols-2 max-sm:grid-cols-1">
             {pageItems.slice(0, 6).map((p) => (
-              <PackageCard key={p.slug} pkg={p} />
+              <PackageCard key={p.slug} pkg={p} onEnquire={setSelected} />
             ))}
 
             {/* Promo banner — first page only */}
@@ -229,10 +231,12 @@ export default function PackagesExplorer({
             )}
 
             {pageItems.slice(6).map((p) => (
-              <PackageCard key={p.slug} pkg={p} />
+              <PackageCard key={p.slug} pkg={p} onEnquire={setSelected} />
             ))}
           </div>
         )}
+
+        <PackageEnquiryModal pkg={selected} onClose={() => setSelected(null)} />
 
         {totalPages > 1 && (
           <nav aria-label="Pagination" className="mt-12 flex flex-wrap items-center justify-between gap-4">

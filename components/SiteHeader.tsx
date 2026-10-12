@@ -1,16 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SITE } from "@/lib/site";
-
-function LogoMark() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-[22px] w-[22px]" aria-hidden="true">
-      <path d="M3 18L9 8l4 6 3-4 5 8H3z" fill="currentColor" opacity="0.9" />
-    </svg>
-  );
-}
 
 export default function SiteHeader({ variant }: { variant: "overlay" | "solid" }) {
   const [scrolled, setScrolled] = useState(false);
@@ -45,12 +38,28 @@ export default function SiteHeader({ variant }: { variant: "overlay" | "solid" }
       >
         <Link
           href="/"
-          className={`flex flex-none items-center gap-2 whitespace-nowrap font-serif text-[17px] font-semibold ${
-            solid ? "text-forest" : "text-paper"
-          }`}
+          aria-label={SITE.name}
+          className="relative flex h-[52px] flex-none items-center whitespace-nowrap"
         >
-          <LogoMark />
-          {SITE.name}
+          {/* White over the hero, black once scrolled — crossfaded, no flash */}
+          <Image
+            src="/images/Dream logo white.png"
+            alt={SITE.name}
+            width={480}
+            height={200}
+            priority
+            aria-hidden={solid}
+            className={`h-[52px] w-auto transition-opacity duration-300 drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] ${solid ? "opacity-0" : "opacity-100"}`}
+          />
+          <Image
+            src="/images/Dream logo black.png"
+            alt={SITE.name}
+            width={480}
+            height={200}
+            priority
+            aria-hidden={!solid}
+            className={`absolute left-0 top-0 h-[52px] w-auto transition-opacity duration-300 ${solid ? "opacity-100" : "opacity-0"}`}
+          />
         </Link>
         <div
           className={`items-center gap-9 max-md:fixed max-md:right-0 max-md:top-0 max-md:h-screen max-md:w-[min(320px,80vw)] max-md:flex-col max-md:items-start max-md:bg-paper max-md:px-8 max-md:pt-24 max-md:shadow-[-8px_0_30px_rgba(0,0,0,0.08)] max-md:transition-transform max-md:duration-300 md:absolute md:left-1/2 md:top-1/2 md:flex md:-translate-x-1/2 md:-translate-y-1/2 ${

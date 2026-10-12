@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PACKAGES } from "@/lib/site";
 
 const STEP_LABELS = [
   "Step 1: Enter your name",
@@ -8,7 +9,8 @@ const STEP_LABELS = [
   "Step 3: Add your email",
   "Step 4: Pick a travel date",
   "Step 5: Choose your duration",
-  "Step 6: Set your budget preference",
+  "Step 6: Pick a package",
+  "Step 7: Set your budget preference",
 ];
 
 const Label = ({ children }: { children: React.ReactNode }) => (
@@ -16,17 +18,18 @@ const Label = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function QuoteForm() {
-  const [values, setValues] = useState({ name: "", mobile: "", email: "", date: "", duration: "4 Nights / 5 Days", budget: "" });
+  const [values, setValues] = useState({ name: "", mobile: "", email: "", date: "", duration: "4 Nights / 5 Days", budget: "", packageSlug: "", customPackage: "" });
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
-  const filled = [values.name, values.mobile, values.email, values.date, values.duration, values.budget].filter(
+  const packageFilled = values.packageSlug === "other" ? values.customPackage : values.packageSlug;
+  const filled = [values.name, values.mobile, values.email, values.date, values.duration, packageFilled, values.budget].filter(
     (v) => v.trim() !== "",
   ).length;
-  const pct = done ? 100 : Math.max(8, Math.round((filled / 6) * 100));
+  const pct = done ? 100 : Math.max(8, Math.round((filled / 7) * 100));
 
   const set = (k: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setValues((v) => ({ ...v, [k]: e.target.value }));
@@ -67,8 +70,13 @@ export default function QuoteForm() {
               e.preventDefault();
               if (sending) return;
               setError("");
+              if (values.packageSlug === "other" && values.customPackage.trim() === "") {
+                setError("Please describe the package you're looking for.");
+                return;
+              }
               setSending(true);
               try {
+                const pkg = PACKAGES.find((p) => p.slug === values.packageSlug);
                 const res = await fetch("/api/lead", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -79,6 +87,11 @@ export default function QuoteForm() {
                     email: values.email || undefined,
                     date: values.date,
                     duration: values.duration,
+                    packageSlug: values.packageSlug || undefined,
+                    packageTitle:
+                      values.packageSlug === "other"
+                        ? `Other: ${values.customPackage.trim()}`
+                        : pkg?.title,
                     budget: values.budget || undefined,
                     adults,
                     children,
@@ -169,6 +182,25 @@ export default function QuoteForm() {
                     className="flex h-[30px] w-[30px] items-center justify-center rounded bg-line text-[15px] text-forest hover:bg-sage">+</button>
                 </div>
               </div>
+            </div>
+
+            <div className="mb-[22px]">
+              <Label>Which package interests you? <span className="font-sans normal-case tracking-normal text-inksoft">(optional)</span></Label>
+              <div className="flex items-center gap-2.5 rounded border border-line bg-paper px-4 py-[13px]">
+                <select value={values.packageSlug} onChange={set("packageSlug")} className="w-full cursor-pointer appearance-none bg-transparent font-sans text-[14.5px] text-ink outline-none">
+                  <option value="">Select a package (optional)</option>
+                  {PACKAGES.map((p) => (
+                    <option key={p.slug} value={p.slug}>{p.title}</option>
+                  ))}
+                  <option value="other">Other — I&apos;ll describe below</option>
+                </select>
+              </div>
+              {values.packageSlug === "other" && (
+                <div className="mt-3 flex items-center gap-2.5 rounded border border-line bg-paper px-4 py-[13px]">
+                  <input value={values.customPackage} onChange={set("customPackage")} type="text" placeholder="e.g. 7-day honeymoon with houseboat and tea hills" aria-label="Describe your package"
+                    className="w-full bg-transparent font-sans text-[14.5px] text-ink outline-none placeholder:text-inksoft/60" />
+                </div>
+              )}
             </div>
 
             <div className="mb-2">

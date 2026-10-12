@@ -7,7 +7,36 @@ function smtpConfigured() {
 }
 
 function zohoConfigured() {
-  return Boolean(process.env.ZOHO_CRM_ACCESS_TOKEN);
+  return Boolean(
+    process.env.ZOHO_CRM_REFRESH_TOKEN &&
+      process.env.ZOHO_CRM_CLIENT_ID &&
+      process.env.ZOHO_CRM_CLIENT_SECRET,
+  );
+}
+
+// Cached access token (module-level). Access tokens live ~1h;
+// the refresh token below mints a new one automatically.
+let cachedZohoToken: { token: string; expiresAt: number } | null = null;
+
+async function zohoAccessToken(): Promise<string> {
+  const now = Date.now();
+  if (cachedZohoToken && cachedZohoToken.expiresAt - 60_000 > now) return cachedZohoToken.token;
+  const dc = (process.env.ZOHO_CRM_DC ?? "in").trim() || "in";
+  const params = new URLSearchParams({
+    grant_type: "refresh_token",
+    client_id: process.env.ZOHO_CRM_CLIENT_ID!,
+    client_secret: process.env.ZOHO_CRM_CLIENT_SECRET!,
+    refresh_token: process.env.ZOHO_CRM_REFRESH_TOKEN!,
+  });
+  const res = await fetch(`https://accounts.zoho.${dc}/oauth/v2/token?${params.toString()}`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Zoho token refresh failed: ${res.status}`);
+  const data = (await res.json()) as { access_token?: string; expires_in?: number; error?: string };
+  if (!data.access_token) throw new Error(`Zoho token refresh: ${data.error ?? "no access_token"}`);
+  cachedZohoToken = { token: data.access_token, expiresAt: now + (data.expires_in ?? 3600) * 1000 };
+  return data.access_token;
 }
 
 function getTransporter() {
@@ -24,9 +53,9 @@ function escapeHtml(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-async function pushToZoho(lead: ReturnType<typeof toZohoLead>) {
+async function pushToZoho(lead: ReturnType<typeof toZohoLead>, retry = true) {
   const dc = (process.env.ZOHO_CRM_DC ?? "in").trim() || "in";
-  const token = process.env.ZOHO_CRM_ACCESS_TOKEN!;
+  const token = await zohoAccessToken();
   const res = await fetch(`https://www.zohoapis.${dc}/crm/v7/Leads`, {
     method: "POST",
     headers: {
@@ -37,6 +66,11 @@ async function pushToZoho(lead: ReturnType<typeof toZohoLead>) {
     // Zoho tokens are short-lived; don't cache.
     cache: "no-store",
   });
+  if (res.status === 401 && retry) {
+    // Token went stale mid-flight — drop the cache and try once more.
+    cachedZohoToken = null;
+    return pushToZoho(lead, false);
+  }
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Zoho CRM ${res.status}: ${text.slice(0, 300)}`);
@@ -64,7 +98,7 @@ export async function POST(req: Request) {
   const canZoho = zohoConfigured();
 
   if (!canEmail && !canZoho) {
-    console.error("[lead] No destination configured. Set LEAD_TO_EMAIL + SMTP_* or ZOHO_CRM_ACCESS_TOKEN.");
+    console.error("[lead] No destination configured. Set LEAD_TO_EMAIL + SMTP_* or ZOHO_CRM_REFRESH_TOKEN set.");
     return NextResponse.json(
       { ok: false, error: "Enquiry service is not configured yet. Please WhatsApp us instead." },
       { status: 500 },
