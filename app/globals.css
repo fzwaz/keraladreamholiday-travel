@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Brand palette (ported from original static site) */
+  --color-mist: #f6f3ec;
+  --color-paper: #fbf9f4;
+  --color-forest: #1f3324;
+  --color-tea: #4c6b4f;
+  --color-sage: #b7c9aa;
+  --color-spice: #bd8339;
+  --color-ink: #1b2420;
+  --color-inksoft: #4b564d;
+  --color-line: rgba(31, 51, 36, 0.14);
+
+  /* Type — wired to next/font variables in layout.tsx */
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-fraunces);
+  --font-mono: var(--font-plex-mono);
+  --font-abril: var(--font-abril);
+  --font-italiana: var(--font-italiana);
+
+  --animate-strip: strip-scroll 32s linear infinite;
+  --animate-cw: cw-scroll 42s linear infinite;
+  --animate-cw-reverse: cw-scroll-reverse 50s linear infinite;
+
+  @keyframes strip-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes cw-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes cw-scroll-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-mist);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Scroll reveal (progressive enhancement — visible by default if JS off) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Edge fade for the traveller marquee rows */
+.cw-mask {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 14%,
+    #000 86%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 14%,
+    #000 86%,
+    transparent 100%
+  );
+}
+
+.cw-paused,
+.cw-paused > * {
+  animation-play-state: paused !important;
+}
+
+/* Homepage story rotator — soft rise between reviews */
+@keyframes story-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.story-enter {
+  animation: story-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--color-spice);
+  outline-offset: 3px;
+}
