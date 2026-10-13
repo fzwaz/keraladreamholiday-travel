@@ -6,10 +6,10 @@ export const SITE = {
     "Dreams Kerala Holiday plans slow, small-group Kerala tour packages — Munnar tea hills, Alleppey houseboats, Thekkady wildlife, Wayanad and Kovalam — with a local guide, not a checklist.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dreamskeralaholiday.com",
   locale: "en_IN",
-  phone: "+91 484 234 5678",
-  phoneHref: "tel:+914842345678",
-  whatsapp: "https://wa.me/914842345678",
-  email: "hello@dreamskeralaholiday.com",
+  phone: "+91 88484 92959",
+  phoneHref: "tel:+918848492959",
+  whatsapp: "https://wa.me/918848492959",
+  email: "keralaholidays.2959@gmail.com",
   address: "Kochi, Kerala, India",
 } as const;
 
@@ -27,34 +27,52 @@ export const REGIONS: Region[] = [
       "Tea terraces folding over the Western Ghats, misty from June to September, sharp and green the rest of the year.",
   },
   {
-    place: "Alappuzha",
-    name: "Backwaters",
-    blurb:
-      "A slow drift through Kuttanad's canals on a converted rice barge, past coconut groves and paddy fields below sea level.",
-  },
-  {
-    place: "Wayanad",
-    name: "Wayanad",
-    blurb:
-      "Cooler, wilder hill country — spice plantations, cave temples, and forest edges where elephants still cross the road.",
-  },
-  {
     place: "Idukki",
     name: "Thekkady",
     blurb:
       "Periyar's forest edge, cardamom hills and boat rides where the wildlife watches you as much as you watch it.",
   },
   {
-    place: "Kottayam",
-    name: "Kumarakom",
+    place: "Alappuzha",
+    name: "Alleppey",
     blurb:
-      "A quieter shore of Vembanad Lake — heron colonies, houseboats moored for the night, and very little to schedule.",
+      "A slow drift through Kuttanad's canals on a converted rice barge, past coconut groves and paddy fields below sea level.",
+  },
+  {
+    place: "Thiruvananthapuram",
+    name: "Trivandrum",
+    blurb:
+      "Kerala's capital — old palaces, museums and temple streets, and the easiest arrival point for the deep south.",
   },
   {
     place: "Thiruvananthapuram",
     name: "Kovalam",
     blurb:
       "Where the Ghats meet the coast — red cliffs, lighthouse views, and the trip's last, unhurried few days.",
+  },
+  {
+    place: "Kanniyakumari",
+    name: "Kanyakumari",
+    blurb:
+      "India's southern tip, where three seas meet — sunrise and sunset over the same water, and the rock memorial offshore.",
+  },
+  {
+    place: "Thiruvananthapuram",
+    name: "Varkala",
+    blurb:
+      "Red cliffs over a long beach, yoga decks and cliff-top cafes — the coast at its most laid-back.",
+  },
+  {
+    place: "Ramanathapuram",
+    name: "Rameshwaram",
+    blurb:
+      "The island temple town — long pillared corridors, the Pamban sea bridge, and Dhanushkodi's empty sands.",
+  },
+  {
+    place: "Madurai",
+    name: "Madurai",
+    blurb:
+      "The temple city — Meenakshi Amman's towering gopurams, jasmine markets, and food worth the detour alone.",
   },
 ];
 

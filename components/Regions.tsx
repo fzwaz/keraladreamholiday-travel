@@ -17,7 +17,7 @@ export default function Regions() {
         <Reveal className="mb-11 max-w-[640px]">
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-tea">Where we go</p>
           <h2 id="regions-heading" className="mt-4 font-serif text-[clamp(30px,4vw,46px)] font-normal leading-[1.1] text-forest">
-            Six landscapes, one state.
+            Nine stops, one slow route.
           </h2>
           <p className="mt-[18px] max-w-[520px] text-base leading-[1.65] text-inksoft">
             Each region gets its own itinerary and its own local guide — someone who grew up on that hillside or that

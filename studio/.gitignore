@@ -1,0 +1,12 @@
+# dependencies
+/node_modules
+
+# studio build output
+/dist/
+/.sanity/
+
+# extracted schema (regenerable via `npm run typegen`)
+schema.json
+
+# typescript
+*.tsbuildinfo

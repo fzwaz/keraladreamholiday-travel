@@ -252,7 +252,7 @@ export type AllSanitySchemaTypes =
   | Geopoint
   | Slug;
 
-// Source: ../Website/lib/sanity/queries.ts
+// Source: ../lib/sanity/queries.ts
 // Variable: DESTINATIONS_QUERY
 // Query: *[_type == "destination"] | order(name asc){ _id, name }
 export type DESTINATIONS_QUERY_RESULT = Array<{
@@ -260,7 +260,7 @@ export type DESTINATIONS_QUERY_RESULT = Array<{
   name: string | null;
 }>;
 
-// Source: ../Website/lib/sanity/queries.ts
+// Source: ../lib/sanity/queries.ts
 // Variable: PACKAGES_QUERY
 // Query: *[_type == "tourPackage"] | order(_createdAt desc){    _id, title, place, duration, price, originalPrice, discountLabel, group, inclusions,    "destinations": destinations[]->name,    customDestinations  }
 export type PACKAGES_QUERY_RESULT = Array<{
@@ -287,7 +287,7 @@ export type PACKAGES_QUERY_RESULT = Array<{
   customDestinations: Array<string> | null;
 }>;
 
-// Source: ../Website/lib/sanity/queries.ts
+// Source: ../lib/sanity/queries.ts
 // Variable: PACKAGE_QUERY
 // Query: *[_type == "tourPackage" && _id == $id][0]{ _id, title, body }
 export type PACKAGE_QUERY_RESULT = {
@@ -313,7 +313,7 @@ export type PACKAGE_QUERY_RESULT = {
   }> | null;
 } | null;
 
-// Source: ../Website/lib/sanity/queries.ts
+// Source: ../lib/sanity/queries.ts
 // Variable: TESTIMONIALS_QUERY
 // Query: *[_type == "testimonial"] | order(_createdAt desc){    _id, name, anonymous, location, text, dateLabel,    "photos": photos[]{ "url": asset->url }  }
 export type TESTIMONIALS_QUERY_RESULT = Array<{

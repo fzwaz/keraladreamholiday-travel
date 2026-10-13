@@ -60,12 +60,20 @@ export function validateLead(input: unknown): { ok: true; lead: LeadPayload } | 
   };
 }
 
-export function ownerRecipientFor(source: LeadSource): string {
+/**
+ * Every enquiry goes to the owner inbox, with a copy to the checker inbox.
+ * Per-source overrides (LEAD_QUOTE_TO / LEAD_PACKAGE_TO) replace the owner
+ * address for that source only — the checker still gets a copy.
+ * The administrator gets no enquiry mail; access is granted separately
+ * (Sanity project members, GitHub collaborators, hosting team).
+ */
+export function ownerRecipientsFor(source: LeadSource): string[] {
   const quoteTo = process.env.LEAD_QUOTE_TO?.trim();
   const packageTo = process.env.LEAD_PACKAGE_TO?.trim();
-  const fallback = process.env.LEAD_TO_EMAIL?.trim() ?? "";
-  if (source === "package") return packageTo || fallback;
-  return quoteTo || fallback;
+  const owner = process.env.LEAD_TO_EMAIL?.trim() ?? "";
+  const checker = process.env.LEAD_CC_EMAIL?.trim() ?? "";
+  const primary = source === "package" ? packageTo || owner : quoteTo || owner;
+  return [...new Set([primary, checker].filter(Boolean))];
 }
 
 export function leadDescription(lead: LeadPayload): string {

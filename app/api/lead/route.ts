@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import { leadDescription, ownerRecipientFor, toZohoLead, validateLead } from "@/lib/leads";
+import { leadDescription, ownerRecipientsFor, toZohoLead, validateLead } from "@/lib/leads";
 
 function smtpConfigured() {
   return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
@@ -93,8 +93,8 @@ export async function POST(req: Request) {
   }
   const lead = parsed.lead;
 
-  const ownerTo = ownerRecipientFor(lead.source);
-  const canEmail = smtpConfigured() && Boolean(ownerTo);
+  const ownerTo = ownerRecipientsFor(lead.source);
+  const canEmail = smtpConfigured() && ownerTo.length > 0;
   const canZoho = zohoConfigured();
 
   if (!canEmail && !canZoho) {
