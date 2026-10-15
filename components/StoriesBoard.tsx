@@ -23,7 +23,24 @@ export default function StoriesBoard({ sanityReviews = [] }: { sanityReviews?: R
     setUserReviews(loadReviews());
   }, []);
 
-  function handleSubmit(draft: ReviewDraft) {
+  async function handleSubmit(draft: ReviewDraft) {
+    // First stop: Sanity moderation queue (unpublished draft for owner approval).
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+      const data = (await res.json().catch(() => null)) as { ok?: boolean } | null;
+      if (res.ok && data?.ok) {
+        setStorageNote(
+          "Thank you — your review was sent for approval and will appear here once published.",
+        );
+        return;
+      }
+    } catch {
+      /* fall through to browser-local display */
+    }
     const review: Review = {
       id: newId(),
       name: draft.name,

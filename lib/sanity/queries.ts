@@ -53,7 +53,7 @@ export interface SanityTestimonial {
 }
 
 export const TESTIMONIALS_QUERY = defineQuery(
-  `*[_type == "testimonial"] | order(_createdAt desc){
+  `*[_type == "testimonial" && approved == true] | order(_createdAt desc){
     _id, name, anonymous, location, text, dateLabel,
     "photos": photos[]{ "url": asset->url }
   }`

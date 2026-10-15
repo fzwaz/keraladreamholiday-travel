@@ -33,6 +33,7 @@ export type Testimonial = {
   location?: string;
   text?: string;
   dateLabel?: string;
+  approved?: boolean;
   photos?: Array<{
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -315,7 +316,7 @@ export type PACKAGE_QUERY_RESULT = {
 
 // Source: ../lib/sanity/queries.ts
 // Variable: TESTIMONIALS_QUERY
-// Query: *[_type == "testimonial"] | order(_createdAt desc){    _id, name, anonymous, location, text, dateLabel,    "photos": photos[]{ "url": asset->url }  }
+// Query: *[_type == "testimonial" && approved == true] | order(_createdAt desc){    _id, name, anonymous, location, text, dateLabel,    "photos": photos[]{ "url": asset->url }  }
 export type TESTIMONIALS_QUERY_RESULT = Array<{
   _id: string;
   name: string | null;
@@ -334,7 +335,7 @@ declare global {
     '*[_type == "destination"] | order(name asc){ _id, name }': DESTINATIONS_QUERY_RESULT;
     '*[_type == "tourPackage"] | order(_createdAt desc){\n    _id, title, place, duration, price, originalPrice, discountLabel, group, inclusions,\n    "destinations": destinations[]->name,\n    customDestinations\n  }': PACKAGES_QUERY_RESULT;
     '*[_type == "tourPackage" && _id == $id][0]{ _id, title, body }': PACKAGE_QUERY_RESULT;
-    '*[_type == "testimonial"] | order(_createdAt desc){\n    _id, name, anonymous, location, text, dateLabel,\n    "photos": photos[]{ "url": asset->url }\n  }': TESTIMONIALS_QUERY_RESULT;
+    '*[_type == "testimonial" && approved == true] | order(_createdAt desc){\n    _id, name, anonymous, location, text, dateLabel,\n    "photos": photos[]{ "url": asset->url }\n  }': TESTIMONIALS_QUERY_RESULT;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

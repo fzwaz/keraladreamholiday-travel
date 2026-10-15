@@ -17,7 +17,7 @@ const MAX_FILE_MB = 12;
 const inputCls =
   "w-full bg-transparent font-sans text-[14.5px] text-ink outline-none placeholder:text-inksoft/60";
 
-export default function ReviewForm({ onSubmit }: { onSubmit: (d: ReviewDraft) => void }) {
+export default function ReviewForm({ onSubmit }: { onSubmit: (d: ReviewDraft) => void | Promise<void> }) {
   const [name, setName] = useState("");
   const [anonymous, setAnonymous] = useState(false);
   const [location, setLocation] = useState("");
@@ -83,7 +83,7 @@ export default function ReviewForm({ onSubmit }: { onSubmit: (d: ReviewDraft) =>
           /* skip unreadable files */
         }
       }
-      onSubmit({ name: name.trim(), anonymous, location, text: text.trim(), photos });
+      await onSubmit({ name: name.trim(), anonymous, location, text: text.trim(), photos });
       setName("");
       setAnonymous(false);
       setLocation("");
@@ -91,6 +91,8 @@ export default function ReviewForm({ onSubmit }: { onSubmit: (d: ReviewDraft) =>
       setFiles([]);
       if (fileInput.current) fileInput.current.value = "";
       setThanks(true);
+    } catch {
+      setError("Couldn't send your review. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -106,7 +108,7 @@ export default function ReviewForm({ onSubmit }: { onSubmit: (d: ReviewDraft) =>
         Leave your review
       </h2>
       <p className="mt-2 text-[15px] text-inksoft">
-        Travelled with us? Tell the next traveller how it went. Your words appear below instantly.
+        Travelled with us? Tell the next traveller how it went. Reviews appear here after a quick approval.
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-5 max-sm:grid-cols-1">
@@ -228,7 +230,7 @@ export default function ReviewForm({ onSubmit }: { onSubmit: (d: ReviewDraft) =>
       )}
       {thanks && !error && (
         <p role="status" className="mt-4 rounded border border-tea/40 bg-tea/10 px-4 py-2.5 text-sm text-ink">
-          Thank you — your review is now live below, and your photos are in the gallery.
+          Thank you — your review has been received.
         </p>
       )}
 

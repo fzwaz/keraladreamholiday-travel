@@ -34,6 +34,13 @@ export const testimonial = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'approved',
+      title: 'Approved',
+      description: 'Only approved reviews appear on the website. Tick to publish.',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
       name: 'photos',
       type: 'array',
       of: [defineArrayMember({type: 'image', options: {hotspot: true}})],
