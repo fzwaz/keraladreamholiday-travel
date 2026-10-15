@@ -1,4 +1,4 @@
-export type LeadSource = "quote" | "package";
+export type LeadSource = "quote" | "package" | "cab";
 
 export type LeadPayload = {
   source: LeadSource;
@@ -13,6 +13,16 @@ export type LeadPayload = {
   packageSlug?: string;
   packageTitle?: string;
   page?: string;
+  // Cab bookings
+  vehicle?: string;
+  tripType?: string;
+  pickup?: string;
+  dropoff?: string;
+  startDate?: string;
+  endDate?: string;
+  time?: string;
+  language?: string;
+  comments?: string;
   // Honeypot — bots fill this, humans leave it empty.
   company?: string;
 };
@@ -29,7 +39,11 @@ export function validateLead(input: unknown): { ok: true; lead: LeadPayload } | 
   }
 
   const sourceRaw = typeof b.source === "string" ? b.source.toLowerCase() : "quote";
-  const source: LeadSource = sourceRaw.includes("pack") || sourceRaw.includes("promo") ? "package" : "quote";
+  const source: LeadSource = sourceRaw.includes("cab")
+    ? "cab"
+    : sourceRaw.includes("pack") || sourceRaw.includes("promo")
+      ? "package"
+      : "quote";
 
   const name = String(b.name ?? b.fullName ?? "").trim().slice(0, 120);
   const phone = String(b.phone ?? b.mobile ?? "").trim().slice(0, 30);
@@ -40,6 +54,15 @@ export function validateLead(input: unknown): { ok: true; lead: LeadPayload } | 
   const packageSlug = String(b.packageSlug ?? "").trim().slice(0, 120);
   const packageTitle = String(b.packageTitle ?? "").trim().slice(0, 160);
   const page = String(b.page ?? "").trim().slice(0, 300);
+  const vehicle = String(b.vehicle ?? "").trim().slice(0, 120);
+  const tripType = String(b.tripType ?? b.bookingFor ?? "").trim().slice(0, 60);
+  const pickup = String(b.pickup ?? "").trim().slice(0, 160);
+  const dropoff = String(b.dropoff ?? b.dropOff ?? "").trim().slice(0, 160);
+  const startDate = String(b.startDate ?? "").trim().slice(0, 40);
+  const endDate = String(b.endDate ?? "").trim().slice(0, 40);
+  const time = String(b.time ?? "").trim().slice(0, 20);
+  const language = String(b.language ?? "").trim().slice(0, 40);
+  const comments = String(b.comments ?? "").trim().slice(0, 1000);
 
   let adults: number | undefined;
   let children: number | undefined;
@@ -52,11 +75,13 @@ export function validateLead(input: unknown): { ok: true; lead: LeadPayload } | 
     return { ok: false, error: "Please add a valid 10-digit mobile number." };
   if (source === "package" && phone.replace(/\D/g, "").length < 10)
     return { ok: false, error: "Please add a valid phone number." };
+  if (source === "cab" && phone.replace(/\D/g, "").length < 10)
+    return { ok: false, error: "Please add a valid phone number." };
   if (email && !EMAIL_RE.test(email)) return { ok: false, error: "That email address doesn't look right." };
 
   return {
     ok: true,
-    lead: { source, name, phone, email: email || undefined, date: date || undefined, duration: duration || undefined, budget: budget || undefined, adults, children, packageSlug: packageSlug || undefined, packageTitle: packageTitle || undefined, page: page || undefined },
+    lead: { source, name, phone, email: email || undefined, date: date || undefined, duration: duration || undefined, budget: budget || undefined, adults, children, packageSlug: packageSlug || undefined, packageTitle: packageTitle || undefined, page: page || undefined, vehicle: vehicle || undefined, tripType: tripType || undefined, pickup: pickup || undefined, dropoff: dropoff || undefined, startDate: startDate || undefined, endDate: endDate || undefined, time: time || undefined, language: language || undefined, comments: comments || undefined },
   };
 }
 
@@ -88,6 +113,15 @@ export function leadDescription(lead: LeadPayload): string {
     typeof lead.children === "number" ? `Children: ${lead.children}` : undefined,
     lead.budget ? `Budget: ${lead.budget}` : undefined,
     lead.packageTitle ? `Package: ${lead.packageTitle} (${lead.packageSlug ?? ""})` : undefined,
+    lead.vehicle ? `Vehicle: ${lead.vehicle}` : undefined,
+    lead.tripType ? `Trip: ${lead.tripType}` : undefined,
+    lead.pickup ? `Pickup: ${lead.pickup}` : undefined,
+    lead.dropoff ? `Drop-off: ${lead.dropoff}` : undefined,
+    lead.startDate ? `Start: ${lead.startDate}` : undefined,
+    lead.endDate ? `End: ${lead.endDate}` : undefined,
+    lead.time ? `Time: ${lead.time}` : undefined,
+    lead.language ? `Language: ${lead.language}` : undefined,
+    lead.comments ? `Comments: ${lead.comments}` : undefined,
     lead.page ? `Page: ${lead.page}` : undefined,
   ].filter(Boolean);
   return lines.join("\n");
@@ -101,7 +135,7 @@ export function toZohoLead(lead: LeadPayload) {
     First_Name: rest.length > 0 ? first : undefined,
     Mobile: lead.phone,
     Email: lead.email,
-    Lead_Source: lead.source === "package" ? "Website - Package" : "Website - Quote",
+    Lead_Source: lead.source === "package" ? "Website - Package" : lead.source === "cab" ? "Website - Cab" : "Website - Quote",
     Description: leadDescription(lead),
   };
 }

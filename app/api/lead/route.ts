@@ -112,7 +112,7 @@ export async function POST(req: Request) {
     try {
       const transporter = getTransporter();
       const from = process.env.SMTP_FROM?.trim() || process.env.SMTP_USER!;
-      const label = lead.source === "package" ? "Package enquiry" : "Quote request";
+      const label = lead.source === "package" ? "Package enquiry" : lead.source === "cab" ? "Cab booking" : "Quote request";
       const subject = `[${label}] ${lead.name} — ${lead.phone}`;
       const text = `${label} from ${process.env.NEXT_PUBLIC_SITE_URL ?? "the website"}\n\n${leadDescription(lead)}\n\nReply to traveller: ${lead.phone}${lead.email ? ` / ${lead.email}` : ""}`;
       await transporter.sendMail({
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
         from,
         to: lead.email,
         subject: "We got your Kerala enquiry — we'll call within 30 minutes",
-        text: `Hi ${lead.name},\n\nThanks for enquiring with Dreams Kerala Holiday. We received your ${lead.source === "package" ? "package enquiry" : "quote request"}${lead.duration ? ` (${lead.duration})` : ""}.\n\nWe'll call you on ${lead.phone} within 30 minutes (9am–9pm IST).\n\nWhatsApp us anytime if it's urgent.\n\n— Dreams Kerala Holiday, Kochi`,
+        text: `Hi ${lead.name},\n\nThanks for enquiring with Dreams Kerala Holiday. We received your ${lead.source === "package" ? "package enquiry" : lead.source === "cab" ? "cab booking" : "quote request"}${lead.duration ? ` (${lead.duration})` : ""}.\n\nWe'll call you on ${lead.phone} within 30 minutes (9am–9pm IST).\n\nWhatsApp us anytime if it's urgent.\n\n— Dreams Kerala Holiday, Kochi`,
       });
     } catch (e) {
       // Auto-reply failure shouldn't fail the lead.

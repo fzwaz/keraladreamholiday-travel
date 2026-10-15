@@ -28,6 +28,7 @@ export default function SiteFooter() {
           <nav aria-label="Studio">
             <h2 className="mb-[18px] font-mono text-xs uppercase tracking-[0.1em] text-tea">Studio</h2>
             <Link href="/packages" className="mb-3 block text-[14.5px] text-inksoft transition-colors hover:text-forest">Packages</Link>
+            <Link href="/cabs" className="mb-3 block text-[14.5px] text-inksoft transition-colors hover:text-forest">Cab &amp; Taxi</Link>
             <Link href="/#process" className="mb-3 block text-[14.5px] text-inksoft transition-colors hover:text-forest">How it works</Link>
             <Link href="/#stories" className="mb-3 block text-[14.5px] text-inksoft transition-colors hover:text-forest">Stories</Link>
             <Link href="#contact" className="mb-3 block text-[14.5px] text-inksoft transition-colors hover:text-forest">Contact</Link>

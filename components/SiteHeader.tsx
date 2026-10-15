@@ -76,6 +76,15 @@ export default function SiteHeader({ variant }: { variant: "overlay" | "solid" }
             Packages
           </Link>
           <Link
+            href="/cabs"
+            onClick={() => setOpen(false)}
+            className={`text-sm transition-colors max-md:text-base max-md:text-inksoft ${
+              solid ? "text-inksoft hover:text-forest" : "text-paper/85 hover:text-paper"
+            }`}
+          >
+            Cabs
+          </Link>
+          <Link
             href="/#process"
             onClick={() => setOpen(false)}
             className={`text-sm transition-colors max-md:text-base max-md:text-inksoft ${
